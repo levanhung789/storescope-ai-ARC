@@ -118,8 +118,15 @@ function buildCatalog() {
 }
 
 export async function GET() {
-  const catalog = buildCatalog();
-  return NextResponse.json(catalog, {
-    headers: { "Cache-Control": "public, max-age=3600" },
-  });
+  try {
+    const catalog = buildCatalog();
+    return NextResponse.json(catalog, {
+      headers: { "Cache-Control": "public, max-age=3600" },
+    });
+  } catch {
+    // Fallback when public/companies/ is not present (e.g. Vercel deployment)
+    return NextResponse.json([], {
+      headers: { "Cache-Control": "public, max-age=60" },
+    });
+  }
 }
