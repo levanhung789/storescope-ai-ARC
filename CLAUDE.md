@@ -146,9 +146,33 @@ Trước khi báo hoàn thành UI task: mở browser kiểm tra golden path + re
 
 ---
 
-## Trạng thái dự án (cập nhật 2026-04-30)
+## Trạng thái dự án (cập nhật 2026-05-01)
 
-### Đã hoàn thành
+---
+
+## Nhật ký làm việc
+
+### 2026-04-30 — Roboflow AI Integration
+
+**Đã làm:**
+- Nghiên cứu ARC Network (Circle-backed L1, USDC native gas, Chain ID 5042002)
+- Upload 1001 ảnh sản phẩm FMCG lên Roboflow project `fmcg-project`
+- Build API route `/api/analyze` — Roboflow inference + OCR brand matching + price extraction
+- Tích hợp Tesseract.js OCR (tiếng Việt + Anh) chạy client-side trong Analysis page
+- Analysis page hiển thị kết quả thật: brands detected, prices từ ảnh, shelf share
+- Scripts: `upload-to-roboflow.js` (done), `annotate-roboflow.js` (WIP)
+
+**Vấn đề gặp phải:**
+- Roboflow annotation REST API (`/dataset/{project}/annotate/{id}`) không nhận bất kỳ format nào — XML, YOLO, JSON, plain text đều trả về "Unrecognized annotation format". Đây là limitation của API, chỉ hoạt động qua Roboflow UI hoặc Python SDK
+- Duplicate image detection by content hash — không thể re-upload ảnh đã có để thêm annotation
+
+**Tình trạng Roboflow:**
+- 1001 ảnh uploaded, 0 annotated, 0 model versions
+- Auto-label đang chạy trong UI (user triggered)
+
+---
+
+### Đã hoàn thành (toàn dự án)
 
 | Phần | Trạng thái | Ghi chú |
 |---|---|---|
@@ -172,6 +196,8 @@ Trước khi báo hoàn thành UI task: mở browser kiểm tra golden path + re
 | Wallet — Connect & Verify | Hoàn thành | SIWE: ký message xác nhận chủ ví mỗi session, nonce ngẫu nhiên |
 | Wallet — Balance display | Hoàn thành | xx.xx USDC (6 decimals đúng cho ARC), dropdown gọn |
 | ARC Network integration | Hoàn thành | wagmi v3, viem, Chain ID 5042002, USDC native gas |
+| Roboflow upload | Hoàn thành | 1001 ảnh FMCG đã upload lên fmcg-project |
+| AI Analysis pipeline | Một phần | OCR hoạt động, Roboflow detection chờ model train |
 | Deploy | Hoàn thành | GitHub: storescope-ai + storescope-ai-ARC, Vercel: storescope-ai.vercel.app |
 
 ### File cấu trúc Layout Editor (3D)
@@ -217,19 +243,25 @@ app/_components/LayoutEditor/
 - Header glow strip nằm ngang trên đỉnh tủ → chuyển thành stripe trên mặt trước
 - `emissiveIntensity` quá cao (2.8–3.0) → giảm xuống 0.35–0.6 với toon material
 
-### Bước tiếp theo
+### Việc cần làm hôm nay (2026-05-01)
 
-1. **Roboflow model training** — 1001 ảnh đã upload lên `fmcg-project`. Auto-label đang chạy trong UI. Sau khi xong: Generate → Train → điền `RF_VERSION=1` vào `.env.local`.
+**Ưu tiên cao — Roboflow:**
+1. **Hoàn thành Auto-label** trên Roboflow UI → `app.roboflow.com/levanhungs-workspace/fmcg-project/annotate`
+   - Sau khi auto-label xong: click **Generate** → **Train**
+   - Đợi 10-15 phút → vào **Versions** → copy version number
+   - Điền vào `.env.local`: `RF_VERSION=1`
+   - Restart server → Roboflow detection bật lên trong `/dashboard/analysis`
 
-2. **Roboflow annotation API** — `/dataset/{project}/annotate/{id}` endpoint không nhận bất kỳ format nào qua REST API (XML, YOLO, JSON, text đều fail). Chỉ annotation qua Roboflow UI hoặc Python SDK mới hoạt động.
+2. **Test pipeline phân tích ảnh thật** — upload ảnh kệ hàng dầu ăn vào `/dashboard/analysis` và kiểm tra kết quả OCR + detection
 
-3. **Smart contract thật cho Layout Mint** — `MintModal.tsx` dùng mock tx. Cần deploy `LayoutRegistry.sol` lên ARC testnet.
+**Ưu tiên trung:**
+3. **Cải thiện dashboard** — thêm thêm công ty vào catalog (dairy, beverages, instant food sectors)
+4. **WindTune AI project** (`C:\Users\Admin\OneDrive\Máy tính\MeetYourBuild\windtune-ai`) — tiếp tục tính năng dự đoán tune sequence
 
-4. **Smart contract cho Analysis payment** — `PaymentGateModal` gọi `USDC.transfer` thật nhưng chưa có contract nhận on-chain.
-
-5. **Kết nối gửi email thật** — `app/api/contact/route.ts` chỉ log console.
-
-6. **`public/companies/` trên Vercel** — 203MB gitignored. Cần CDN.
+**Để sau:**
+5. Smart contract thật cho Layout Mint + Analysis payment
+6. Email thật cho `/api/contact`
+7. CDN cho `public/companies/` (203MB)
 
 ### Roboflow Integration (2026-04-30)
 
