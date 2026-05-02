@@ -146,11 +146,30 @@ Trước khi báo hoàn thành UI task: mở browser kiểm tra golden path + re
 
 ---
 
-## Trạng thái dự án (cập nhật 2026-05-01)
+## Trạng thái dự án (cập nhật 2026-05-03)
 
 ---
 
 ## Nhật ký làm việc
+
+### 2026-05-01~03 — OCR Pipeline hoàn chỉnh + README cho ARC team
+
+**Đã làm:**
+- Hoàn thiện analysis pipeline: `shelfShare`, `recommendations`, `stockRisk` từ data thật (không còn hardcode)
+- Tab "Analysis Report" hiển thị brands thật detect được, shelf share thật, recommendations tự sinh từ kết quả
+- Fix `saveReport` unused import
+- Test thực tế: OCR detect "Masan / Chinsu" (78%), giá 42,400đ và 56,200đ từ ảnh
+- Viết README đầy đủ cho ARC team: setup, MetaMask config, features to test, pipeline diagram
+- Push lên cả 2 GitHub repos: `storescope-ai` (Vercel) và `storescope-ai-ARC` (hackathon)
+
+**Tình trạng analysis pipeline hiện tại:**
+- OCR (Tesseract.js): ✅ Hoạt động — đọc text tiếng Việt + Anh từ ảnh
+- Brand matching: ✅ Match 16+ thương hiệu FMCG Việt Nam
+- Price extraction: ✅ Nhận dạng giá VND từ ảnh
+- Shelf share: ✅ Tính tự động từ brands detected
+- Roboflow detection: ⏳ Chờ model train (Auto-label đang chạy trên UI)
+
+---
 
 ### 2026-04-30 — Roboflow AI Integration
 
@@ -243,7 +262,7 @@ app/_components/LayoutEditor/
 - Header glow strip nằm ngang trên đỉnh tủ → chuyển thành stripe trên mặt trước
 - `emissiveIntensity` quá cao (2.8–3.0) → giảm xuống 0.35–0.6 với toon material
 
-### Việc cần làm hôm nay (2026-05-01)
+### Việc cần làm tiếp theo
 
 **Ưu tiên cao — Roboflow:**
 1. **Hoàn thành Auto-label** trên Roboflow UI → `app.roboflow.com/levanhungs-workspace/fmcg-project/annotate`
@@ -252,11 +271,12 @@ app/_components/LayoutEditor/
    - Điền vào `.env.local`: `RF_VERSION=1`
    - Restart server → Roboflow detection bật lên trong `/dashboard/analysis`
 
-2. **Test pipeline phân tích ảnh thật** — upload ảnh kệ hàng dầu ăn vào `/dashboard/analysis` và kiểm tra kết quả OCR + detection
+2. **Test pipeline với ảnh kệ hàng thật** — upload ảnh siêu thị có nhiều brand vào `/dashboard/analysis`
 
 **Ưu tiên trung:**
-3. **Cải thiện dashboard** — thêm thêm công ty vào catalog (dairy, beverages, instant food sectors)
-4. **WindTune AI project** (`C:\Users\Admin\OneDrive\Máy tính\MeetYourBuild\windtune-ai`) — tiếp tục tính năng dự đoán tune sequence
+3. **WindTune AI project** (`C:\Users\Admin\OneDrive\Máy tính\MeetYourBuild\windtune-ai`) — tiếp tục tính năng dự đoán tune sequence game Where Wind Meets
+
+4. **Cải thiện dashboard** — thêm dairy, beverages, instant food sectors vào catalog
 
 **Để sau:**
 5. Smart contract thật cho Layout Mint + Analysis payment
